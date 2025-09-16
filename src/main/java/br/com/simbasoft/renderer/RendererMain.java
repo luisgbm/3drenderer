@@ -1,15 +1,17 @@
 package br.com.simbasoft.renderer;
 
+import com.sun.jna.ptr.IntByReference;
 import io.github.libsdl4j.api.event.SDL_Event;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.libsdl4j.api.event.SDL_EventType.SDL_KEYDOWN;
-import static io.github.libsdl4j.api.event.SDL_EventType.SDL_QUIT;
+import static io.github.libsdl4j.api.event.SDL_EventType.*;
 import static io.github.libsdl4j.api.event.SdlEvents.SDL_PollEvent;
 import static io.github.libsdl4j.api.keycode.SDL_Keycode.*;
+import static io.github.libsdl4j.api.mouse.SdlMouse.SDL_GetMouseState;
+import static io.github.libsdl4j.api.mouse.SdlMouse.SDL_SetRelativeMouseMode;
 import static io.github.libsdl4j.api.timer.SdlTimer.SDL_Delay;
 import static io.github.libsdl4j.api.timer.SdlTimer.SDL_GetTicks;
 
@@ -211,10 +213,16 @@ public class RendererMain {
                         case SDLK_6 -> display.setRenderMethod(ERenderMethod.RENDER_TEXTURED_WIRE);
                         case SDLK_C -> display.setCullMethod(ECullMethod.CULL_BACKFACE);
                         case SDLK_X -> display.setCullMethod(ECullMethod.CULL_NONE);
-                        case SDLK_I -> camera.rotateCameraPitch(3.0 * deltaTime);
-                        case SDLK_K -> camera.rotateCameraPitch(-3.0 * deltaTime);
-                        case SDLK_L -> camera.rotateCameraYaw(deltaTime);
-                        case SDLK_J -> camera.rotateCameraYaw(-1 * deltaTime);
+                        case SDLK_D -> {
+                            Vector3 right = Vector3.cross(camera.getDirection(), new Vector3(0, 1, 0)).normalize();
+                            Vector3 newPosition = Vector3.add(camera.getPosition(), Vector3.multiply(right, -5.0 * deltaTime));
+                            camera.updateCameraPosition(newPosition);
+                        }
+                        case SDLK_A -> {
+                            Vector3 left = Vector3.cross(camera.getDirection(), new Vector3(0, -1, 0)).normalize();
+                            Vector3 newPosition = Vector3.subtract(camera.getPosition(), Vector3.multiply(left, 5.0 * deltaTime));
+                            camera.updateCameraPosition(newPosition);
+                        }
                         case SDLK_W -> {
                             camera.updateCameraForwardVelocity(Vector3.multiply(camera.getDirection(), 5.0 * deltaTime));
                             camera.updateCameraPosition(Vector3.add(camera.getPosition(), camera.getForwardVelocity()));
@@ -224,6 +232,14 @@ public class RendererMain {
                             camera.updateCameraPosition(Vector3.subtract(camera.getPosition(), camera.getForwardVelocity()));
                         }
                     }
+                }
+                case SDL_MOUSEMOTION -> {
+                    double sensitivity = 0.2;
+                    double yawChange = event.motion.xrel * sensitivity;
+                    double pitchChange = event.motion.yrel * sensitivity;
+
+                    camera.rotateCameraYaw(yawChange * deltaTime);
+                    camera.rotateCameraPitch(-pitchChange * deltaTime);
                 }
             }
         }

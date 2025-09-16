@@ -10,6 +10,10 @@ public record Vector3(double x, double y, double z) {
         );
     }
 
+    public Vector3 normalize() {
+        return Vector3.normalize(this);
+    }
+
     public static Vector3 subtract(Vector3 a, Vector3 b) {
         return new Vector3(
                 a.x - b.x,

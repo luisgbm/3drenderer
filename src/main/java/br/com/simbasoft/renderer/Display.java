@@ -9,6 +9,7 @@ import io.github.libsdl4j.api.video.SDL_Window;
 import static io.github.libsdl4j.api.Sdl.SDL_Init;
 import static io.github.libsdl4j.api.Sdl.SDL_Quit;
 import static io.github.libsdl4j.api.SdlSubSystemConst.SDL_INIT_EVERYTHING;
+import static io.github.libsdl4j.api.mouse.SdlMouse.SDL_SetRelativeMouseMode;
 import static io.github.libsdl4j.api.pixels.SDL_PixelFormatEnum.SDL_PIXELFORMAT_RGB888;
 import static io.github.libsdl4j.api.render.SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING;
 import static io.github.libsdl4j.api.render.SdlRender.*;
@@ -87,6 +88,7 @@ public class Display {
         }
 
         SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+        SDL_SetRelativeMouseMode(true);
     }
 
     public void destroyWindow() {
